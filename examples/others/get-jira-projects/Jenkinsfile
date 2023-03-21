@@ -1,0 +1,32 @@
+@Library('apwide-jenkins-shared-lib') _
+
+pipeline {
+    agent any
+    options {
+        disableConcurrentBuilds()
+        buildDiscarder(logRotator(numToKeepStr: '1'))
+    }
+//    triggers {
+//        cron('* * * * *') // every 1 minute
+//    }
+    environment {
+//        APW_JIRA_BASE_URL = 'http://mycompany.com/jira' // these variables can be defined at different level: jenkins global properties, pipeline level, stage level
+//        APW_JIRA_CREDENTIALS_ID = 'jira-credentials'
+        APW_JIRA_CLOUD_CREDENTIALS_ID = "jira-cloud-credentials"
+        APW_JIRA_CLOUD_BASE_URL = 'https://mycompany.atlassian.net'
+        APW_BUILD_FAIL_ON_ERROR = false
+//        APW_LOG_LEVEL = 'OFF'
+    }
+    stages {
+        stage('Get jira projects') {
+            steps {
+                script {
+                    def projects = apwCallJira(httpMode: 'GET', path: '/rest/api/2/project')
+                    echo "output projects"
+                    echo "${projects}"
+                }
+            }
+
+        }
+    }
+}
